@@ -7,6 +7,7 @@
     "dev": "concurrently -k -n WEB,AI \"npm:dev:web\" \"npm:dev:ai\"",
     "dev:web": "vite",
     "dev:ai": "tsx server/index.ts",
+    "start": "tsx server/index.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
