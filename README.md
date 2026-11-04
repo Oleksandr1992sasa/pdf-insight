@@ -6,15 +6,15 @@ The application supports local PDF parsing, AI-assisted document analysis, JSON 
 Demo
 Public demo:
 
-TODO: add GitHub Pages URL
+https://oleksandr1992sasa.github.io/pdf-insight/
 
 Repository:
 
-TODO: add public GitHub repository URL
+https://github.com/Oleksandr1992sasa/pdf-insight
 
 Screenshot:
 
-TODO: add screenshot before submission
+Screenshot: see the public demo above.
 
 Features
 Core functionality
