@@ -1,8 +1,7 @@
 import type { PdfInsightResult } from './schema'
 
 const HISTORY_STORAGE_KEY = 'pdf-insight-history-v1'
-export const HISTORY_CHANGED_EVENT =
-  'pdf-insight-history-changed'
+export const HISTORY_CHANGED_EVENT = 'pdf-insight-history-changed'
 
 const HISTORY_LIMIT = 50
 
@@ -19,10 +18,7 @@ export interface PdfHistoryEntry {
   insight: PdfInsightResult
 }
 
-function createHistoryId(
-  fileName: string,
-  analyzedAt: string,
-): string {
+function createHistoryId(fileName: string, analyzedAt: string): string {
   return `${analyzedAt}-${fileName}`
 }
 
@@ -35,9 +31,7 @@ function notifyHistoryChanged(): void {
     return
   }
 
-  window.dispatchEvent(
-    new Event(HISTORY_CHANGED_EVENT),
-  )
+  window.dispatchEvent(new Event(HISTORY_CHANGED_EVENT))
 }
 
 export function getPdfHistory(): PdfHistoryEntry[] {
@@ -46,9 +40,7 @@ export function getPdfHistory(): PdfHistoryEntry[] {
   }
 
   try {
-    const raw = window.localStorage.getItem(
-      HISTORY_STORAGE_KEY,
-    )
+    const raw = window.localStorage.getItem(HISTORY_STORAGE_KEY)
 
     if (!raw) {
       return []
@@ -73,16 +65,11 @@ export function getPdfHistory(): PdfHistoryEntry[] {
   }
 }
 
-export function savePdfHistory(
-  insight: PdfInsightResult,
-): PdfHistoryEntry {
+export function savePdfHistory(insight: PdfInsightResult): PdfHistoryEntry {
   const analyzedAt = new Date().toISOString()
 
   const entry: PdfHistoryEntry = {
-    id: createHistoryId(
-      insight.document.fileName,
-      analyzedAt,
-    ),
+    id: createHistoryId(insight.document.fileName, analyzedAt),
     analyzedAt,
     source: 'ai-v2',
     fileName: insight.document.fileName,
@@ -104,18 +91,12 @@ export function savePdfHistory(
     (item) =>
       item.fileName === entry.fileName &&
       item.summary === entry.summary &&
-      JSON.stringify(item.amounts) ===
-        JSON.stringify(entry.amounts),
+      JSON.stringify(item.amounts) === JSON.stringify(entry.amounts),
   )
 
   const next =
     duplicateIndex >= 0
-      ? [
-          entry,
-          ...current.filter(
-            (_, index) => index !== duplicateIndex,
-          ),
-        ]
+      ? [entry, ...current.filter((_, index) => index !== duplicateIndex)]
       : [entry, ...current]
 
   try {
@@ -132,22 +113,15 @@ export function savePdfHistory(
   return entry
 }
 
-export function deletePdfHistoryEntry(
-  id: string,
-): void {
+export function deletePdfHistoryEntry(id: string): void {
   if (!isBrowser()) {
     return
   }
 
-  const next = getPdfHistory().filter(
-    (entry) => entry.id !== id,
-  )
+  const next = getPdfHistory().filter((entry) => entry.id !== id)
 
   try {
-    window.localStorage.setItem(
-      HISTORY_STORAGE_KEY,
-      JSON.stringify(next),
-    )
+    window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(next))
 
     notifyHistoryChanged()
   } catch {
@@ -161,9 +135,7 @@ export function clearPdfHistory(): void {
   }
 
   try {
-    window.localStorage.removeItem(
-      HISTORY_STORAGE_KEY,
-    )
+    window.localStorage.removeItem(HISTORY_STORAGE_KEY)
 
     notifyHistoryChanged()
   } catch {

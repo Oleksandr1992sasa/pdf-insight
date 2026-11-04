@@ -9,10 +9,7 @@
 import { analyzePdfWithAi } from '../lib/ai-analyze'
 import { analyzePdf } from '../lib/analyze'
 import { savePdfHistory } from '../lib/history'
-import {
-  extractPdfText,
-  type PdfExtractionResult,
-} from '../lib/pdf'
+import { extractPdfText, type PdfExtractionResult } from '../lib/pdf'
 import type { PdfInsightResult } from '../lib/schema'
 import { JsonResult } from './JsonResult'
 import { PdfHistory } from './PdfHistory'
@@ -21,8 +18,7 @@ const MAX_PDF_SIZE = 10 * 1024 * 1024
 
 function validatePdfFile(file: File): string | null {
   const isPdf =
-    file.type === 'application/pdf' ||
-    file.name.toLowerCase().endsWith('.pdf')
+    file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
 
   if (!isPdf) {
     return 'Wybierz plik PDF.'
@@ -50,29 +46,23 @@ export function PdfUploader() {
   const inputRef = useRef<HTMLInputElement>(null)
   const lastFileRef = useRef<File | null>(null)
 
-  const [result, setResult] =
-    useState<PdfExtractionResult | null>(null)
+  const [result, setResult] = useState<PdfExtractionResult | null>(null)
 
-  const [insight, setInsight] =
-    useState<PdfInsightResult | null>(null)
+  const [insight, setInsight] = useState<PdfInsightResult | null>(null)
 
-  const [analysisSource, setAnalysisSource] =
-    useState<AnalysisSource | null>(null)
+  const [analysisSource, setAnalysisSource] = useState<AnalysisSource | null>(
+    null,
+  )
 
-  const [aiWarning, setAiWarning] =
-    useState<string | null>(null)
+  const [aiWarning, setAiWarning] = useState<string | null>(null)
 
-  const [error, setError] =
-    useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const [isLoading, setIsLoading] =
-    useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const [analysisStatus, setAnalysisStatus] =
-    useState<AnalysisStatus>('idle')
+  const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus>('idle')
 
-  const [isDragging, setIsDragging] =
-    useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
   const processFile = useCallback(async (file: File) => {
     lastFileRef.current = file
@@ -125,9 +115,7 @@ export function PdfUploader() {
       if (caughtError instanceof Error) {
         setError(caughtError.message)
       } else {
-        setError(
-          'Wystąpił nieznany błąd podczas analizy PDF.',
-        )
+        setError('Wystąpił nieznany błąd podczas analizy PDF.')
       }
     } finally {
       setIsLoading(false)
@@ -144,9 +132,7 @@ export function PdfUploader() {
     void processFile(file)
   }
 
-  const handleFileChange = (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
     event.target.value = ''
@@ -171,23 +157,17 @@ export function PdfUploader() {
     void processFile(file)
   }
 
-  const handleDragOver = (
-    event: DragEvent<HTMLDivElement>,
-  ) => {
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     setIsDragging(true)
   }
 
-  const handleDragLeave = (
-    event: DragEvent<HTMLDivElement>,
-  ) => {
+  const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     setIsDragging(false)
   }
 
-  const handleDrop = (
-    event: DragEvent<HTMLDivElement>,
-  ) => {
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     setIsDragging(false)
 
@@ -220,9 +200,7 @@ export function PdfUploader() {
   return (
     <section className="pdf-uploader">
       <div
-        className={`pdf-drop-zone ${
-          isDragging ? 'pdf-drop-zone--active' : ''
-        }`}
+        className={`pdf-drop-zone ${isDragging ? 'pdf-drop-zone--active' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -237,22 +215,17 @@ export function PdfUploader() {
 
         <h2>Analiza dokumentu PDF</h2>
 
-        <p>
-          Przeciągnij plik PDF tutaj lub wybierz go z dysku.
+        <p>Przeciągnij plik PDF tutaj lub wybierz go z dysku.</p>
+
+        <p>Maksymalny rozmiar pliku: 10 MB.</p>
+
+        <p className="pdf-ai-notice">
+          Treść dokumentu zostanie przesłana do usługi AI w celu wykonania
+          analizy.
         </p>
 
-        <p>
-          Maksymalny rozmiar pliku: 10 MB.
-        </p>
-
-        <button
-          type="button"
-          onClick={openFilePicker}
-          disabled={isLoading}
-        >
-          {isLoading
-            ? 'Analizowanie...'
-            : 'Wybierz plik PDF'}
+        <button type="button" onClick={openFilePicker} disabled={isLoading}>
+          {isLoading ? 'Analizowanie...' : 'Wybierz plik PDF'}
         </button>
       </div>
 
@@ -261,52 +234,35 @@ export function PdfUploader() {
           className={`analysis-status analysis-status--${analysisStatus}`}
           role="status"
         >
-          {analysisStatus === 'reading' &&
-            'Odczytywanie dokumentu PDF...'}
+          {analysisStatus === 'reading' && 'Odczytywanie dokumentu PDF...'}
 
-          {analysisStatus === 'local-ready' &&
-            'Analiza lokalna gotowa.'}
+          {analysisStatus === 'local-ready' && 'Analiza lokalna gotowa.'}
 
-          {analysisStatus === 'ai-analyzing' &&
-            'AI v2 analizuje dokument...'}
+          {analysisStatus === 'ai-analyzing' && 'AI v2 analizuje dokument...'}
 
-          {analysisStatus === 'ai-ready' &&
-            'Analiza AI v2 gotowa.'}
+          {analysisStatus === 'ai-ready' && 'Analiza AI v2 gotowa.'}
 
           {analysisStatus === 'fallback' &&
             'Analiza lokalna gotowa. AI v2 jest niedostępne.'}
 
-          {analysisStatus === 'error' &&
-            'Analiza dokumentu nie powiodła się.'}
+          {analysisStatus === 'error' && 'Analiza dokumentu nie powiodła się.'}
         </div>
       )}
 
       {error && (
-        <div
-          role="alert"
-          className="pdf-error"
-        >
+        <div role="alert" className="pdf-error">
           <p>{error}</p>
 
           {analysisStatus === 'error' && (
-            <button
-              type="button"
-              onClick={handleRetry}
-              disabled={isLoading}
-            >
-              {isLoading
-                ? 'Ponawianie...'
-                : 'Ponów próbę'}
+            <button type="button" onClick={handleRetry} disabled={isLoading}>
+              {isLoading ? 'Ponawianie...' : 'Ponów próbę'}
             </button>
           )}
         </div>
       )}
 
       {aiWarning && (
-        <div
-          role="status"
-          className="pdf-warning"
-        >
+        <div role="status" className="pdf-warning">
           {aiWarning}
         </div>
       )}
@@ -314,14 +270,10 @@ export function PdfUploader() {
       {result && insight && (
         <article className="pdf-result">
           <header>
-            <h2>
-              {insight.document.title ??
-                insight.document.fileName}
-            </h2>
+            <h2>{insight.document.title ?? insight.document.fileName}</h2>
 
             <p className="analysis-source">
               Źródło analizy:{' '}
-
               <span
                 className={
                   analysisSource === 'ai-v2'
@@ -329,9 +281,7 @@ export function PdfUploader() {
                     : 'analysis-badge analysis-badge--local'
                 }
               >
-                {analysisSource === 'ai-v2'
-                  ? 'AI v2'
-                  : 'Local v1.2'}
+                {analysisSource === 'ai-v2' ? 'AI v2' : 'Local v1.2'}
               </span>
             </p>
           </header>
@@ -371,9 +321,7 @@ export function PdfUploader() {
 
             <ul>
               {insight.keyPoints.map((point) => (
-                <li key={point}>
-                  {point}
-                </li>
+                <li key={point}>{point}</li>
               ))}
             </ul>
           </section>
@@ -383,13 +331,9 @@ export function PdfUploader() {
               <h3>Organizacje</h3>
 
               <ul>
-                {insight.entities.organizations.map(
-                  (organization) => (
-                    <li key={organization}>
-                      {organization}
-                    </li>
-                  ),
-                )}
+                {insight.entities.organizations.map((organization) => (
+                  <li key={organization}>{organization}</li>
+                ))}
               </ul>
             </section>
           )}
@@ -399,13 +343,9 @@ export function PdfUploader() {
               <h3>Osoby</h3>
 
               <ul>
-                {insight.entities.people.map(
-                  (person) => (
-                    <li key={person}>
-                      {person}
-                    </li>
-                  ),
-                )}
+                {insight.entities.people.map((person) => (
+                  <li key={person}>{person}</li>
+                ))}
               </ul>
             </section>
           )}
@@ -415,22 +355,17 @@ export function PdfUploader() {
               <h3>Kwoty</h3>
 
               <ul>
-                {insight.amounts.map(
-                  (amount, index) => (
-                    <li
-                      key={`${amount.currency}-${amount.value}-${index}`}
-                    >
-                      <strong>
-                        {amount.value}{' '}
-                        {amount.currency}
-                      </strong>
+                {insight.amounts.map((amount, index) => (
+                  <li key={`${amount.currency}-${amount.value}-${index}`}>
+                    <strong>
+                      {amount.value} {amount.currency}
+                    </strong>
 
-                      {' — '}
+                    {' — '}
 
-                      {amount.context}
-                    </li>
-                  ),
-                )}
+                    {amount.context}
+                  </li>
+                ))}
               </ul>
             </section>
           )}
@@ -440,21 +375,15 @@ export function PdfUploader() {
               <h3>Daty</h3>
 
               <ul>
-                {insight.dates.map(
-                  (dateItem, index) => (
-                    <li
-                      key={`${dateItem.date}-${index}`}
-                    >
-                      <strong>
-                        {dateItem.date}
-                      </strong>
+                {insight.dates.map((dateItem, index) => (
+                  <li key={`${dateItem.date}-${index}`}>
+                    <strong>{dateItem.date}</strong>
 
-                      {' — '}
+                    {' — '}
 
-                      {dateItem.context}
-                    </li>
-                  ),
-                )}
+                    {dateItem.context}
+                  </li>
+                ))}
               </ul>
             </section>
           )}
@@ -463,9 +392,7 @@ export function PdfUploader() {
             <section>
               <h3>Słowa kluczowe</h3>
 
-              <p>
-                {insight.keywords.join(', ')}
-              </p>
+              <p>{insight.keywords.join(', ')}</p>
             </section>
           )}
 

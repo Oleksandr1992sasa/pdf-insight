@@ -20,9 +20,7 @@ export const pdfInsightSchema = z.object({
   document: z.object({
     fileName: z.string().min(1),
     pages: z.number().int().positive(),
-        language: z
-      .string()
-      .regex(/^[a-z]{2}$/, 'Język musi być kodem ISO 639-1'),
+    language: z.string().regex(/^[a-z]{2}$/, 'Język musi być kodem ISO 639-1'),
     type: documentTypeSchema,
     title: z.string().min(1).nullable(),
     date: isoDateSchema.nullable(),

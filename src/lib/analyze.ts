@@ -1,7 +1,4 @@
-import {
-  validatePdfInsight,
-  type PdfInsightResult,
-} from './schema'
+import { validatePdfInsight, type PdfInsightResult } from './schema'
 import type { PdfExtractionResult } from './pdf'
 
 type AmountKind = 'rate' | 'item' | 'total'
@@ -18,15 +15,11 @@ function normalizeText(value: string): string {
 }
 
 function parseMoney(value: string): number {
-  return Number.parseFloat(
-    value.replace(/\s/g, '').replace(',', '.'),
-  )
+  return Number.parseFloat(value.replace(/\s/g, '').replace(',', '.'))
 }
 
 function normalizeCurrency(value: string): string {
-  return value.toLowerCase() === 'zł'
-    ? 'PLN'
-    : value.toUpperCase()
+  return value.toLowerCase() === 'zł' ? 'PLN' : value.toUpperCase()
 }
 
 function detectLanguage(text: string): string {
@@ -41,24 +34,15 @@ function detectDocumentType(
 ): 'faktura' | 'umowa' | 'oferta' | 'raport' | 'inne' {
   const lower = text.toLowerCase()
 
-  if (
-    lower.includes('faktura') ||
-    lower.includes('invoice')
-  ) {
+  if (lower.includes('faktura') || lower.includes('invoice')) {
     return 'faktura'
   }
 
-  if (
-    lower.includes('umowa') ||
-    lower.includes('contract')
-  ) {
+  if (lower.includes('umowa') || lower.includes('contract')) {
     return 'umowa'
   }
 
-  if (
-    lower.includes('oferta') ||
-    lower.includes('quotation')
-  ) {
+  if (lower.includes('oferta') || lower.includes('quotation')) {
     return 'oferta'
   }
 
@@ -72,10 +56,7 @@ function detectDocumentType(
   return 'inne'
 }
 
-function extractTitle(
-  text: string,
-  fileName: string,
-): string {
+function extractTitle(text: string, fileName: string): string {
   const normalized = normalizeText(text)
 
   const titles = [
@@ -87,18 +68,13 @@ function extractTitle(
   ]
 
   const detected = titles.find((title) =>
-    normalized
-      .toLowerCase()
-      .includes(title.toLowerCase()),
+    normalized.toLowerCase().includes(title.toLowerCase()),
   )
 
   return detected ?? fileName
 }
 
-function addAmount(
-  amounts: DetectedAmount[],
-  amount: DetectedAmount,
-): void {
+function addAmount(amounts: DetectedAmount[], amount: DetectedAmount): void {
   const exists = amounts.some(
     (item) =>
       item.value === amount.value &&
@@ -111,21 +87,15 @@ function addAmount(
   }
 }
 
-function extractAmounts(
-  text: string,
-): DetectedAmount[] {
+function extractAmounts(text: string): DetectedAmount[] {
   const amounts: DetectedAmount[] = []
   const normalized = normalizeText(text)
 
   const calculationRegex =
     /(\d+(?:[.,]\d+)?)\s*(?:szt\.?|godz\.?|h)?\s*[×x]\s*(\d[\d\s.,]*?)\s*(zł|PLN|EUR|USD)\s*(\d[\d\s.,]*?)\s*(zł|PLN|EUR|USD)(?=\s|$|[.,;:)])/gi
 
-  for (
-    const match of normalized.matchAll(calculationRegex)
-  ) {
-    const quantity = Number.parseFloat(
-      match[1].replace(',', '.'),
-    )
+  for (const match of normalized.matchAll(calculationRegex)) {
+    const quantity = Number.parseFloat(match[1].replace(',', '.'))
 
     const rate = parseMoney(match[2])
     const rateCurrency = normalizeCurrency(match[3])
@@ -142,9 +112,7 @@ function extractAmounts(
         value: rate,
         currency: rateCurrency,
         kind: 'rate',
-        context:
-          `Stawka: ${rate.toLocaleString('pl-PL')} ` +
-          `${rateCurrency}`,
+        context: `Stawka: ${rate.toLocaleString('pl-PL')} ` + `${rateCurrency}`,
       })
 
       addAmount(amounts, {
@@ -162,9 +130,7 @@ function extractAmounts(
   const totalRegex =
     /(?:razem do zapłaty|razem|разом до сплати)\s*:?\s*(\d[\d\s.,]*?)\s*(zł|PLN|EUR|USD)(?=\s|$|[.,;:)])/gi
 
-  for (
-    const match of normalized.matchAll(totalRegex)
-  ) {
+  for (const match of normalized.matchAll(totalRegex)) {
     const value = parseMoney(match[1])
 
     if (Number.isFinite(value)) {
@@ -175,18 +141,14 @@ function extractAmounts(
         currency,
         kind: 'total',
         context:
-          `Razem do zapłaty: ` +
-          `${value.toLocaleString('pl-PL')} ${currency}`,
+          `Razem do zapłaty: ` + `${value.toLocaleString('pl-PL')} ${currency}`,
       })
     }
   }
 
-  const moneyRegex =
-    /(\d[\d\s.,]*?)\s*(zł|PLN|EUR|USD)(?=\s|$|[.,;:)])/gi
+  const moneyRegex = /(\d[\d\s.,]*?)\s*(zł|PLN|EUR|USD)(?=\s|$|[.,;:)])/gi
 
-  for (
-    const match of normalized.matchAll(moneyRegex)
-  ) {
+  for (const match of normalized.matchAll(moneyRegex)) {
     const value = parseMoney(match[1])
 
     if (!Number.isFinite(value)) {
@@ -196,9 +158,7 @@ function extractAmounts(
     const currency = normalizeCurrency(match[2])
 
     const alreadyKnown = amounts.some(
-      (item) =>
-        item.value === value &&
-        item.currency === currency,
+      (item) => item.value === value && item.currency === currency,
     )
 
     if (alreadyKnown) {
@@ -210,8 +170,7 @@ function extractAmounts(
       currency,
       kind: 'item',
       context:
-        `Kwota pozycji: ` +
-        `${value.toLocaleString('pl-PL')} ${currency}`,
+        `Kwota pozycji: ` + `${value.toLocaleString('pl-PL')} ${currency}`,
     })
   }
 
@@ -222,20 +181,15 @@ function extractKeyPoints(text: string): string[] {
   const normalized = normalizeText(text)
 
   const polishPart =
-    normalized.split(
-      /перелік виконаних робіт|перелік виконаних робіт/i,
-    )[0] ?? normalized
+    normalized.split(/перелік виконаних робіт|перелік виконаних робіт/i)[0] ??
+    normalized
 
   const points = Array.from(
     polishPart.matchAll(
       /(?:^|\s)(\d+)\s+(.+?)(?=\s+\d+\s+[A-ZĄĆĘŁŃÓŚŹŻ]|Razem do zapłaty|$)/g,
     ),
   )
-    .map((match) =>
-      normalizeText(
-        `${match[1]}. ${match[2]}`,
-      ),
-    )
+    .map((match) => normalizeText(`${match[1]}. ${match[2]}`))
     .filter((value) => value.length >= 10)
     .slice(0, 7)
 
@@ -250,9 +204,7 @@ function extractKeyPoints(text: string): string[] {
     .slice(0, 7)
 
   while (fallback.length < 3) {
-    fallback.push(
-      'Brak dodatkowych informacji w dokumencie.',
-    )
+    fallback.push('Brak dodatkowych informacji w dokumencie.')
   }
 
   return fallback
@@ -263,25 +215,16 @@ function buildSummary(
   keyPoints: string[],
   amounts: DetectedAmount[],
 ): string {
-  const total = amounts.find(
-    (amount) => amount.kind === 'total',
-  )
+  const total = amounts.find((amount) => amount.kind === 'total')
 
   const workCount = keyPoints.filter(
-    (point) =>
-      !point.startsWith(
-        'Brak dodatkowych informacji',
-      ),
+    (point) => !point.startsWith('Brak dodatkowych informacji'),
   ).length
 
-  const parts = [
-    `Dokument "${title}" zawiera informacje o wykonanych pracach.`,
-  ]
+  const parts = [`Dokument "${title}" zawiera informacje o wykonanych pracach.`]
 
   if (workCount > 0) {
-    parts.push(
-      `Rozpoznano ${workCount} główne pozycje lub informacje.`,
-    )
+    parts.push(`Rozpoznano ${workCount} główne pozycje lub informacje.`)
   }
 
   if (total) {
@@ -311,24 +254,15 @@ function extractKeywords(text: string): string[] {
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s]/gu, ' ')
     .split(/\s+/)
-    .filter(
-      (word) =>
-        word.length >= 5 &&
-        !ignored.has(word),
-    )
+    .filter((word) => word.length >= 5 && !ignored.has(word))
 
   return Array.from(new Set(words)).slice(0, 10)
 }
 
-export function analyzePdf(
-  pdf: PdfExtractionResult,
-): PdfInsightResult {
+export function analyzePdf(pdf: PdfExtractionResult): PdfInsightResult {
   const text = pdf.text.trim()
 
-  const title = extractTitle(
-    text,
-    pdf.fileName,
-  )
+  const title = extractTitle(text, pdf.fileName)
 
   const amounts = extractAmounts(text)
   const keyPoints = extractKeyPoints(text)
@@ -343,11 +277,7 @@ export function analyzePdf(
       date: null,
     },
 
-    summary: buildSummary(
-      title,
-      keyPoints,
-      amounts,
-    ),
+    summary: buildSummary(title, keyPoints, amounts),
 
     keyPoints,
 

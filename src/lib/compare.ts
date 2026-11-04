@@ -68,17 +68,11 @@ function compareStringLists(
   const uniqueB = uniqueValues(listB)
 
   const normalizedA = new Map(
-    uniqueA.map((value) => [
-      normalizeValue(value),
-      value,
-    ]),
+    uniqueA.map((value) => [normalizeValue(value), value]),
   )
 
   const normalizedB = new Map(
-    uniqueB.map((value) => [
-      normalizeValue(value),
-      value,
-    ]),
+    uniqueB.map((value) => [normalizeValue(value), value]),
   )
 
   const common = uniqueA.filter((value) =>
@@ -86,13 +80,11 @@ function compareStringLists(
   )
 
   const onlyInA = uniqueA.filter(
-    (value) =>
-      !normalizedB.has(normalizeValue(value)),
+    (value) => !normalizedB.has(normalizeValue(value)),
   )
 
   const onlyInB = uniqueB.filter(
-    (value) =>
-      !normalizedA.has(normalizeValue(value)),
+    (value) => !normalizedA.has(normalizeValue(value)),
   )
 
   return {
@@ -102,18 +94,13 @@ function compareStringLists(
   }
 }
 
-function getAmountTotals(
-  entry: PdfHistoryEntry,
-): Map<string, number> {
+function getAmountTotals(entry: PdfHistoryEntry): Map<string, number> {
   const totals = new Map<string, number>()
 
   for (const amount of entry.amounts) {
     const current = totals.get(amount.currency) ?? 0
 
-    totals.set(
-      amount.currency,
-      current + amount.value,
-    )
+    totals.set(amount.currency, current + amount.value)
   }
 
   return totals
@@ -126,10 +113,7 @@ function compareAmounts(
   const totalsA = getAmountTotals(documentA)
   const totalsB = getAmountTotals(documentB)
 
-  const currencies = new Set([
-    ...totalsA.keys(),
-    ...totalsB.keys(),
-  ])
+  const currencies = new Set([...totalsA.keys(), ...totalsB.keys()])
 
   return Array.from(currencies)
     .sort()
@@ -156,12 +140,8 @@ export function comparePdfHistoryEntries(
   )
 
   const dates = compareStringLists(
-    documentA.insight.dates.map(
-      (item) => `${item.date} — ${item.context}`,
-    ),
-    documentB.insight.dates.map(
-      (item) => `${item.date} — ${item.context}`,
-    ),
+    documentA.insight.dates.map((item) => `${item.date} — ${item.context}`),
+    documentB.insight.dates.map((item) => `${item.date} — ${item.context}`),
   )
 
   const organizations = compareStringLists(
@@ -178,11 +158,9 @@ export function comparePdfHistoryEntries(
     documentA,
     documentB,
 
-    sameType:
-      documentA.type === documentB.type,
+    sameType: documentA.type === documentB.type,
 
-    pageDifference:
-      documentB.pages - documentA.pages,
+    pageDifference: documentB.pages - documentA.pages,
 
     commonKeyPoints: keyPoints.common,
     onlyInAKeyPoints: keyPoints.onlyInA,
@@ -200,9 +178,6 @@ export function comparePdfHistoryEntries(
     onlyInAPeople: people.onlyInA,
     onlyInBPeople: people.onlyInB,
 
-    amountComparisons: compareAmounts(
-      documentA,
-      documentB,
-    ),
+    amountComparisons: compareAmounts(documentA, documentB),
   }
 }

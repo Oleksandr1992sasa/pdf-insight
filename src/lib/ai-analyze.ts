@@ -1,8 +1,5 @@
 import type { PdfExtractionResult } from './pdf'
-import {
-  validatePdfInsight,
-  type PdfInsightResult,
-} from './schema'
+import { validatePdfInsight, type PdfInsightResult } from './schema'
 
 interface AiAnalyzeSuccessResponse {
   ok: true
@@ -15,13 +12,12 @@ interface AiAnalyzeErrorResponse {
   error: string
 }
 
-type AiAnalyzeResponse =
-  | AiAnalyzeSuccessResponse
-  | AiAnalyzeErrorResponse
+type AiAnalyzeResponse = AiAnalyzeSuccessResponse | AiAnalyzeErrorResponse
+
+const MAX_AI_ATTEMPTS = 2
 
 function getApiUrl(): string {
-  const baseUrl =
-    import.meta.env.VITE_API_URL?.trim() ?? ''
+  const baseUrl = import.meta.env.VITE_API_URL?.trim() ?? ''
 
   if (!baseUrl) {
     return '/api/analyze'
@@ -30,7 +26,7 @@ function getApiUrl(): string {
   return `${baseUrl.replace(/\/+$/, '')}/api/analyze`
 }
 
-export async function analyzePdfWithAi(
+async function requestAiAnalysis(
   pdf: PdfExtractionResult,
 ): Promise<PdfInsightResult> {
   const response = await fetch(getApiUrl(), {
@@ -50,9 +46,7 @@ export async function analyzePdfWithAi(
   const raw = await response.text()
 
   if (!raw.trim()) {
-    throw new Error(
-      `Serwer AI zwrócił pustą odpowiedź (${response.status}).`,
-    )
+    throw new Error(`Serwer AI zwrócił pustą odpowiedź (${response.status}).`)
   }
 
   let data: AiAnalyzeResponse
@@ -67,12 +61,36 @@ export async function analyzePdfWithAi(
 
   if (!response.ok || !data.ok) {
     const message =
-      'error' in data
-        ? data.error
-        : 'AI analysis request failed.'
+      'error' in data ? data.error : 'Żądanie analizy AI nie powiodło się.'
 
     throw new Error(message)
   }
 
   return validatePdfInsight(data.insight)
+}
+
+export async function analyzePdfWithAi(
+  pdf: PdfExtractionResult,
+): Promise<PdfInsightResult> {
+  let lastError: unknown
+
+  for (let attempt = 1; attempt <= MAX_AI_ATTEMPTS; attempt += 1) {
+    try {
+      return await requestAiAnalysis(pdf)
+    } catch (error: unknown) {
+      lastError = error
+
+      if (attempt === MAX_AI_ATTEMPTS) {
+        break
+      }
+    }
+  }
+
+  if (lastError instanceof Error) {
+    throw new Error(
+      `Analiza AI nie powiodła się po ponownej próbie. ${lastError.message}`,
+    )
+  }
+
+  throw new Error('Analiza AI nie powiodła się po ponownej próbie.')
 }

@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react'
+import { useEffect, useState } from 'react'
 
 import {
   comparePdfHistoryEntries,
@@ -20,10 +17,7 @@ interface ComparisonListProps {
   values: string[]
 }
 
-function ComparisonList({
-  title,
-  values,
-}: ComparisonListProps) {
+function ComparisonList({ title, values }: ComparisonListProps) {
   if (values.length === 0) {
     return null
   }
@@ -34,9 +28,7 @@ function ComparisonList({
 
       <ul>
         {values.map((value, index) => (
-          <li key={`${title}-${value}-${index}`}>
-            {value}
-          </li>
+          <li key={`${title}-${value}-${index}`}>{value}</li>
         ))}
       </ul>
     </section>
@@ -48,14 +40,8 @@ interface ComparisonResultProps {
   onClose: () => void
 }
 
-function ComparisonResult({
-  comparison,
-  onClose,
-}: ComparisonResultProps) {
-  const {
-    documentA,
-    documentB,
-  } = comparison
+function ComparisonResult({ comparison, onClose }: ComparisonResultProps) {
+  const { documentA, documentB } = comparison
 
   return (
     <section className="pdf-comparison">
@@ -63,25 +49,14 @@ function ComparisonResult({
         <div>
           <h2>Porównanie dokumentów</h2>
           <p>
-            Dokument A:{' '}
-            <strong>
-              {documentA.title ??
-                documentA.fileName}
-            </strong>
+            Dokument A: <strong>{documentA.title ?? documentA.fileName}</strong>
           </p>
           <p>
-            Dokument B:{' '}
-            <strong>
-              {documentB.title ??
-                documentB.fileName}
-            </strong>
+            Dokument B: <strong>{documentB.title ?? documentB.fileName}</strong>
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onClose}
-        >
+        <button type="button" onClick={onClose}>
           Zamknij porównanie
         </button>
       </header>
@@ -97,9 +72,7 @@ function ComparisonResult({
           <dd>{documentB.type}</dd>
 
           <dt>Czy typ jest taki sam?</dt>
-          <dd>
-            {comparison.sameType ? 'Tak' : 'Nie'}
-          </dd>
+          <dd>{comparison.sameType ? 'Tak' : 'Nie'}</dd>
 
           <dt>Liczba stron A</dt>
           <dd>{documentA.pages}</dd>
@@ -137,32 +110,21 @@ function ComparisonResult({
           <h3>Różnice kwotowe</h3>
 
           <p>
-            Porównanie obejmuje sumę wszystkich kwot
-            wykrytych w każdym dokumencie.
+            Porównanie obejmuje sumę wszystkich kwot wykrytych w każdym
+            dokumencie.
           </p>
 
           <ul>
-            {comparison.amountComparisons.map(
-              (amount) => (
-                <li key={amount.currency}>
-                  <strong>{amount.currency}</strong>
-                  {': '}
-                  A = {amount.totalA.toLocaleString(
-                    'pl-PL',
-                  )}
-                  {', '}
-                  B = {amount.totalB.toLocaleString(
-                    'pl-PL',
-                  )}
-                  {', '}
-                  różnica ={' '}
-                  {amount.difference > 0 ? '+' : ''}
-                  {amount.difference.toLocaleString(
-                    'pl-PL',
-                  )}
-                </li>
-              ),
-            )}
+            {comparison.amountComparisons.map((amount) => (
+              <li key={amount.currency}>
+                <strong>{amount.currency}</strong>
+                {': '}A = {amount.totalA.toLocaleString('pl-PL')}
+                {', '}B = {amount.totalB.toLocaleString('pl-PL')}
+                {', '}
+                różnica = {amount.difference > 0 ? '+' : ''}
+                {amount.difference.toLocaleString('pl-PL')}
+              </li>
+            ))}
           </ul>
         </section>
       )}
@@ -170,10 +132,7 @@ function ComparisonResult({
       <section className="pdf-comparison__differences">
         <h3>Najważniejsze informacje</h3>
 
-        <ComparisonList
-          title="Wspólne"
-          values={comparison.commonKeyPoints}
-        />
+        <ComparisonList title="Wspólne" values={comparison.commonKeyPoints} />
 
         <ComparisonList
           title="Tylko w dokumencie A"
@@ -189,10 +148,7 @@ function ComparisonResult({
       <section className="pdf-comparison__differences">
         <h3>Daty</h3>
 
-        <ComparisonList
-          title="Wspólne daty"
-          values={comparison.commonDates}
-        />
+        <ComparisonList title="Wspólne daty" values={comparison.commonDates} />
 
         <ComparisonList
           title="Daty tylko w dokumencie A"
@@ -265,14 +221,13 @@ function ComparisonResult({
 }
 
 export function PdfHistory() {
-  const [history, setHistory] =
-    useState<PdfHistoryEntry[]>(() => getPdfHistory())
+  const [history, setHistory] = useState<PdfHistoryEntry[]>(() =>
+    getPdfHistory(),
+  )
 
-  const [selectedIds, setSelectedIds] =
-    useState<string[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
-  const [comparison, setComparison] =
-    useState<PdfComparisonResult | null>(null)
+  const [comparison, setComparison] = useState<PdfComparisonResult | null>(null)
 
   useEffect(() => {
     const refreshHistory = () => {
@@ -281,34 +236,18 @@ export function PdfHistory() {
       setHistory(nextHistory)
 
       setSelectedIds((current) =>
-        current.filter((id) =>
-          nextHistory.some(
-            (entry) => entry.id === id,
-          ),
-        ),
+        current.filter((id) => nextHistory.some((entry) => entry.id === id)),
       )
     }
 
-    window.addEventListener(
-      HISTORY_CHANGED_EVENT,
-      refreshHistory,
-    )
+    window.addEventListener(HISTORY_CHANGED_EVENT, refreshHistory)
 
-    window.addEventListener(
-      'storage',
-      refreshHistory,
-    )
+    window.addEventListener('storage', refreshHistory)
 
     return () => {
-      window.removeEventListener(
-        HISTORY_CHANGED_EVENT,
-        refreshHistory,
-      )
+      window.removeEventListener(HISTORY_CHANGED_EVENT, refreshHistory)
 
-      window.removeEventListener(
-        'storage',
-        refreshHistory,
-      )
+      window.removeEventListener('storage', refreshHistory)
     }
   }, [])
 
@@ -317,9 +256,7 @@ export function PdfHistory() {
 
     setSelectedIds((current) => {
       if (current.includes(id)) {
-        return current.filter(
-          (selectedId) => selectedId !== id,
-        )
+        return current.filter((selectedId) => selectedId !== id)
       }
 
       if (current.length >= 2) {
@@ -335,24 +272,15 @@ export function PdfHistory() {
       return
     }
 
-    const documentA = history.find(
-      (entry) => entry.id === selectedIds[0],
-    )
+    const documentA = history.find((entry) => entry.id === selectedIds[0])
 
-    const documentB = history.find(
-      (entry) => entry.id === selectedIds[1],
-    )
+    const documentB = history.find((entry) => entry.id === selectedIds[1])
 
     if (!documentA || !documentB) {
       return
     }
 
-    setComparison(
-      comparePdfHistoryEntries(
-        documentA,
-        documentB,
-      ),
-    )
+    setComparison(comparePdfHistoryEntries(documentA, documentB))
   }
 
   const handleCancelComparison = () => {
@@ -364,9 +292,7 @@ export function PdfHistory() {
     deletePdfHistoryEntry(id)
 
     setSelectedIds((current) =>
-      current.filter(
-        (selectedId) => selectedId !== id,
-      ),
+      current.filter((selectedId) => selectedId !== id),
     )
 
     setComparison(null)
@@ -392,13 +318,8 @@ export function PdfHistory() {
       <header className="pdf-history__header">
         <div>
           <h2>Historia analiz</h2>
-          <p>
-            Zapisane analizy AI v2: {history.length}
-          </p>
-          <p>
-            Wybrano do porównania:{' '}
-            {selectedIds.length}/2
-          </p>
+          <p>Zapisane analizy AI v2: {history.length}</p>
+          <p>Wybrano do porównania: {selectedIds.length}/2</p>
         </div>
 
         <div className="pdf-history__actions">
@@ -413,18 +334,12 @@ export function PdfHistory() {
           <button
             type="button"
             onClick={handleCancelComparison}
-            disabled={
-              selectedIds.length === 0 &&
-              comparison === null
-            }
+            disabled={selectedIds.length === 0 && comparison === null}
           >
             Anuluj porównanie
           </button>
 
-          <button
-            type="button"
-            onClick={handleClear}
-          >
+          <button type="button" onClick={handleClear}>
             Wyczyść historię
           </button>
         </div>
@@ -432,8 +347,7 @@ export function PdfHistory() {
 
       {selectedIds.length === 2 && !comparison && (
         <p role="status">
-          Wybrano dwa dokumenty. Kliknij
-          „Porównaj dokumenty”.
+          Wybrano dwa dokumenty. Kliknij „Porównaj dokumenty”.
         </p>
       )}
 
@@ -446,8 +360,7 @@ export function PdfHistory() {
 
       <div className="pdf-history__list">
         {history.map((entry, index) => {
-          const isSelected =
-            selectedIds.includes(entry.id)
+          const isSelected = selectedIds.includes(entry.id)
 
           const selectionLabel =
             selectedIds.indexOf(entry.id) === 0
@@ -460,41 +373,26 @@ export function PdfHistory() {
             <article
               key={entry.id}
               className={`pdf-history__entry ${
-                isSelected
-                  ? 'pdf-history__entry--selected'
-                  : ''
+                isSelected ? 'pdf-history__entry--selected' : ''
               }`}
             >
               <header>
-                <h3>
-                  {entry.title ?? entry.fileName}
-                </h3>
+                <h3>{entry.title ?? entry.fileName}</h3>
 
-                <span className="analysis-badge analysis-badge--ai">
-                  AI v2
-                </span>
+                <span className="analysis-badge analysis-badge--ai">AI v2</span>
               </header>
 
               {selectionLabel && (
-                <p className="pdf-history__selection-label">
-                  {selectionLabel}
-                </p>
+                <p className="pdf-history__selection-label">{selectionLabel}</p>
               )}
 
               <label>
                 <input
                   type="checkbox"
                   checked={isSelected}
-                  disabled={
-                    !isSelected &&
-                    selectedIds.length >= 2
-                  }
-                  onChange={() =>
-                    handleToggleSelection(entry.id)
-                  }
-                />
-
-                {' '}
+                  disabled={!isSelected && selectedIds.length >= 2}
+                  onChange={() => handleToggleSelection(entry.id)}
+                />{' '}
                 Wybierz do porównania
               </label>
 
@@ -512,11 +410,7 @@ export function PdfHistory() {
                 <dd>{entry.pages}</dd>
 
                 <dt>Data analizy</dt>
-                <dd>
-                  {new Date(
-                    entry.analyzedAt,
-                  ).toLocaleString('pl-PL')}
-                </dd>
+                <dd>{new Date(entry.analyzedAt).toLocaleString('pl-PL')}</dd>
               </dl>
 
               <div className="pdf-history__summary">
@@ -529,32 +423,24 @@ export function PdfHistory() {
                   <h4>Kwoty</h4>
 
                   <ul>
-                    {entry.amounts.map(
-                      (amount, amountIndex) => (
-                        <li
-                          key={`${entry.id}-${amount.currency}-${amount.value}-${amountIndex}`}
-                        >
-                          <strong>
-                            {amount.value}{' '}
-                            {amount.currency}
-                          </strong>
+                    {entry.amounts.map((amount, amountIndex) => (
+                      <li
+                        key={`${entry.id}-${amount.currency}-${amount.value}-${amountIndex}`}
+                      >
+                        <strong>
+                          {amount.value} {amount.currency}
+                        </strong>
 
-                          {' — '}
+                        {' — '}
 
-                          {amount.context}
-                        </li>
-                      ),
-                    )}
+                        {amount.context}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               )}
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleDelete(entry.id)
-                }
-              >
+              <button type="button" onClick={() => handleDelete(entry.id)}>
                 Usuń z historii
               </button>
             </article>

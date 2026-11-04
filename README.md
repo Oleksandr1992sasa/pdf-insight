@@ -14,7 +14,9 @@ https://github.com/Oleksandr1992sasa/pdf-insight
 
 Screenshot:
 
-Screenshot: see the public demo above.
+## Screenshot
+
+![PDF Insight - AI analysis result](public/screenshot.png)
 
 Features
 Core functionality
@@ -48,41 +50,41 @@ Result schema
 Every analysis follows this structure:
 
 {
-  "document": {
-    "fileName": "umowa.pdf",
-    "pages": 4,
-    "language": "pl",
-    "type": "umowa",
-    "title": "Umowa serwisowa",
-    "date": "2026-09-01"
-  },
-  "summary": "Document summary...",
-  "keyPoints": [
-    "Important point 1",
-    "Important point 2",
-    "Important point 3"
-  ],
-  "entities": {
-    "organizations": [],
-    "people": []
-  },
-  "amounts": [
-    {
-      "value": 12500,
-      "currency": "PLN",
-      "context": "wynagrodzenie"
-    }
-  ],
-  "dates": [
-    {
-      "date": "2026-10-01",
-      "context": "termin płatności"
-    }
-  ],
-  "keywords": [
-    "serwis",
-    "SLA"
-  ]
+"document": {
+"fileName": "umowa.pdf",
+"pages": 4,
+"language": "pl",
+"type": "umowa",
+"title": "Umowa serwisowa",
+"date": "2026-09-01"
+},
+"summary": "Document summary...",
+"keyPoints": [
+"Important point 1",
+"Important point 2",
+"Important point 3"
+],
+"entities": {
+"organizations": [],
+"people": []
+},
+"amounts": [
+{
+"value": 12500,
+"currency": "PLN",
+"context": "wynagrodzenie"
+}
+],
+"dates": [
+{
+"date": "2026-10-01",
+"context": "termin płatności"
+}
+],
+"keywords": [
+"serwis",
+"SLA"
+]
 }
 The result is validated before it is displayed.
 
@@ -103,28 +105,28 @@ Architecture
 PDF Insight uses a frontend/backend architecture.
 
 Browser
-  |
-  | PDF
-  v
+|
+| PDF
+v
 React + TypeScript
-  |
-  | pdf.js text extraction
-  v
+|
+| pdf.js text extraction
+v
 Local analysis
-  |
-  | structured request
-  v
+|
+| structured request
+v
 Backend API
-  |
-  | secured AI request
-  v
+|
+| secured AI request
+v
 LLM API
-  |
-  | structured result
-  v
+|
+| structured result
+v
 Zod validation
-  |
-  v
+|
+v
 UI + JSON export + History
 Frontend
 The frontend is built using:
@@ -179,13 +181,13 @@ PDF Insight performs local analysis before the AI result is available.
 Typical state flow:
 
 PDF selected
-    ↓
+↓
 Odczytywanie dokumentu PDF...
-    ↓
+↓
 Local v1.2 result
-    ↓
+↓
 AI v2 analizuje dokument...
-    ↓
+↓
 Analiza AI v2 gotowa.
 If AI analysis fails, the local result remains available to the user.
 
@@ -263,15 +265,15 @@ npm run dev
 This starts:
 
 Frontend: http://localhost:5173
-Backend:  http://localhost:3001
+Backend: http://localhost:3001
 Backend health endpoint:
 
 http://localhost:3001/api/health
 Expected response:
 
 {
-  "ok": true,
-  "service": "pdf-insight-ai"
+"ok": true,
+"service": "pdf-insight-ai"
 }
 Available commands
 Development:
@@ -347,25 +349,25 @@ Local history is stored in the browser.
 Project structure
 pdf-insight/
 ├── server/
-│   └── index.ts
+│ └── index.ts
 │
 ├── src/
-│   ├── components/
-│   │   ├── JsonResult.tsx
-│   │   ├── PdfHistory.tsx
-│   │   └── PdfUploader.tsx
-│   │
-│   ├── lib/
-│   │   ├── ai-analyze.ts
-│   │   ├── analyze.ts
-│   │   ├── compare.ts
-│   │   ├── history.ts
-│   │   ├── pdf.ts
-│   │   ├── schema.test.ts
-│   │   └── schema.ts
-│   │
-│   ├── App.css
-│   └── App.tsx
+│ ├── components/
+│ │ ├── JsonResult.tsx
+│ │ ├── PdfHistory.tsx
+│ │ └── PdfUploader.tsx
+│ │
+│ ├── lib/
+│ │ ├── ai-analyze.ts
+│ │ ├── analyze.ts
+│ │ ├── compare.ts
+│ │ ├── history.ts
+│ │ ├── pdf.ts
+│ │ ├── schema.test.ts
+│ │ └── schema.ts
+│ │
+│ ├── App.css
+│ └── App.tsx
 │
 ├── .env.example
 ├── .gitignore
@@ -384,12 +386,12 @@ Deployment
 The intended production architecture is:
 
 GitHub Pages
-     |
-     | VITE_API_URL
-     v
+|
+| VITE_API_URL
+v
 Backend API
-     |
-     v
+|
+v
 AI API
 GitHub Pages hosts only the static frontend.
 
@@ -402,11 +404,11 @@ CI/CD
 The project quality pipeline runs:
 
 lint
-  ↓
+↓
 test
-  ↓
+↓
 build
-  ↓
+↓
 deploy
 GitHub Actions is used for automated validation and deployment.
 

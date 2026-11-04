@@ -19,9 +19,7 @@ export interface PdfExtractionResult {
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
-export async function extractPdfText(
-  file: File,
-): Promise<PdfExtractionResult> {
+export async function extractPdfText(file: File): Promise<PdfExtractionResult> {
   if (file.type !== 'application/pdf') {
     throw new Error('Dozwolone są tylko pliki PDF.')
   }
@@ -75,7 +73,7 @@ export async function extractPdfText(
       })
     }
 
-        throw new Error('Nie udało się odczytać PDF.', {
+    throw new Error('Nie udało się odczytać PDF.', {
       cause: error,
     })
   } finally {

@@ -1,12 +1,6 @@
-import {
-  describe,
-  expect,
-  it,
-} from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  validatePdfInsight,
-} from './schema'
+import { validatePdfInsight } from './schema'
 
 const validInsight = {
   document: {
@@ -18,8 +12,7 @@ const validInsight = {
     date: '2026-09-01',
   },
 
-  summary:
-    'Umowa określa zasady świadczenia usług serwisowych.',
+  summary: 'Umowa określa zasady świadczenia usług serwisowych.',
 
   keyPoints: [
     'Okres umowy wynosi 12 miesięcy.',
@@ -28,9 +21,7 @@ const validInsight = {
   ],
 
   entities: {
-    organizations: [
-      'Przykład sp. z o.o.',
-    ],
+    organizations: ['Przykład sp. z o.o.'],
     people: [],
   },
 
@@ -49,25 +40,18 @@ const validInsight = {
     },
   ],
 
-  keywords: [
-    'serwis',
-    'umowa',
-  ],
+  keywords: ['serwis', 'umowa'],
 }
 
 describe('pdfInsightSchema', () => {
   it('accepts a valid PDF Insight result', () => {
-    const result =
-      validatePdfInsight(validInsight)
+    const result = validatePdfInsight(validInsight)
 
-    expect(result.document.fileName)
-      .toBe('umowa.pdf')
+    expect(result.document.fileName).toBe('umowa.pdf')
 
-    expect(result.document.type)
-      .toBe('umowa')
+    expect(result.document.type).toBe('umowa')
 
-    expect(result.amounts[0].currency)
-      .toBe('PLN')
+    expect(result.amounts[0].currency).toBe('PLN')
   })
 
   it('accepts null document date', () => {
@@ -97,17 +81,13 @@ describe('pdfInsightSchema', () => {
       keywords: [],
     })
 
-    expect(result.entities.organizations)
-      .toEqual([])
+    expect(result.entities.organizations).toEqual([])
 
-    expect(result.entities.people)
-      .toEqual([])
+    expect(result.entities.people).toEqual([])
 
-    expect(result.amounts)
-      .toEqual([])
+    expect(result.amounts).toEqual([])
 
-    expect(result.dates)
-      .toEqual([])
+    expect(result.dates).toEqual([])
   })
 
   it('rejects an invalid document type', () => {
@@ -185,10 +165,7 @@ describe('pdfInsightSchema', () => {
       validatePdfInsight({
         ...validInsight,
 
-        keyPoints: [
-          'Pierwsza informacja.',
-          'Druga informacja.',
-        ],
+        keyPoints: ['Pierwsza informacja.', 'Druga informacja.'],
       }),
     ).toThrow()
   })
